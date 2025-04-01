@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { 
   User, 
@@ -12,7 +11,7 @@ import {
   decryptMessage, 
   importKey 
 } from "@/lib/encryption";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface ChatContextType {
   currentUser: User;
@@ -33,7 +32,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [typingUsers] = useState<Map<string, boolean>>(new Map());
 
-  // Load initial data
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -50,19 +48,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadInitialData();
   }, []);
 
-  // Set typing status for a user
   const setUserTyping = (userId: string, isTyping: boolean) => {
     typingUsers.set(userId, isTyping);
-    // Force re-render
     setChats([...chats]);
   };
 
-  // Send a new message
   const sendMessage = async (content: string, attachments?: any[]) => {
     if (!activeChat) return;
     
     try {
-      // Create new message
       const newMessage: Message = {
         id: `msg-${Date.now()}`,
         senderId: currentUser.id,
@@ -73,29 +67,23 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         attachments
       };
       
-      // If this is an encrypted chat, encrypt the message
       if (activeChat.encryptionKey) {
         const key = await importKey(activeChat.encryptionKey);
         newMessage.content = await encryptMessage(content, key);
       }
       
-      // Update the active chat with the new message
       const updatedChat = {
         ...activeChat,
         messages: [...activeChat.messages, newMessage],
         lastMessage: newMessage
       };
       
-      // Update the chats list
       const updatedChats = chats.map(chat => 
         chat.id === activeChat.id ? updatedChat : chat
       );
       
       setChats(updatedChats);
       setActiveChat(updatedChat);
-      
-      // In a real app, this is where you would send the message to the server
-      // and handle WebSocket events for real-time updates
       
       return;
     } catch (error) {

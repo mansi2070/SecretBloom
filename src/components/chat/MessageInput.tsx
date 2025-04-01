@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,16 +17,12 @@ const MessageInput = () => {
   const [isRecording, setIsRecording] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Handle typing indicator
   const handleTyping = (value: string) => {
     setMessage(value);
     
-    // In a real app, this would emit typing status to other users
-    // For demo purposes, we'll simulate receiving typing events
     if (activeChat && !activeChat.isGroupChat) {
       const otherUser = activeChat.participants.find(u => u.id !== currentUser.id);
       if (otherUser && value.length > 0) {
-        // Show typing indicator for 3 seconds after the user stops typing
         setUserTyping(otherUser.id, true);
         
         setTimeout(() => {
@@ -43,14 +38,12 @@ const MessageInput = () => {
     await sendMessage(message);
     setMessage("");
     
-    // Focus back on the textarea
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Send message on Enter (without shift)
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -94,7 +87,7 @@ const MessageInput = () => {
           <Button 
             onClick={handleSubmit} 
             disabled={!message.trim()}
-            variant="primary"
+            variant="default"
             size="icon"
             className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
